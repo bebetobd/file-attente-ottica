@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ACCUEIL
+  DOCTEUR1
+  DOCTEUR2
+  DOCTEUR3
+  LABORATOIRE
+  DG
+}
+
+// Postes vers lesquels l'accueil peut orienter un patient
+enum Poste {
+  DOCTEUR1
+  DOCTEUR2
+  DOCTEUR3
+  LABORATOIRE
+}
+
+enum Statut {
+  EN_ATTENTE
+  EN_COURS
+  TERMINE
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  role     Role
+}
+
+model Ticket {
+  id         String   @id @default(cuid())
+  numero     Int
+  patientNom String
+  poste      Poste
+  statut     Statut   @default(EN_ATTENTE)
+  createdAt  DateTime @default(now())
+  appeleAt   DateTime?
+  termineAt  DateTime?
+
+  @@index([poste, statut])
+  @@index([createdAt])
+}
